@@ -106,7 +106,7 @@ public final class Ventana extends javax.swing.JFrame implements Runnable {
         Oficina.addItem("Villahermosa");
         Oficina.addItem("San Luis Potosi");
 
-        this.setTitle("Información de mi PC");
+        this.setTitle("Registro");
         
         ImageIcon iconB=new ImageIcon(this.getClass().getResource("/cosmic.png"));
         this.setIconImage(iconB.getImage());
@@ -875,7 +875,7 @@ public final class Ventana extends javax.swing.JFrame implements Runnable {
         
         try{
             jsonRequest = gson.toJson(equipo);
-            String respuestaService = sr.postObject("https://ti.cosmic.mx/api/CatEquipo", jsonRequest);
+            String respuestaService = sr.postObject("https://ti.cosmic.mx/api/CatEquipo/save", jsonRequest);
             if (respuestaService.contains("Guardado exitoso")) {
                 JOptionPane.showMessageDialog(null, "Registro exitoso ");
             }else if (respuestaService.contains("Este equipo ya se encuentra asignado a ese usuario")) {

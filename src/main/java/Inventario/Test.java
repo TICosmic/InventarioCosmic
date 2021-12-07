@@ -7,7 +7,7 @@ package Inventario;
 
 import java.text.SimpleDateFormat;
 import Fuentes.ServiceResponse;
-import Fuentes.WinRegistry;
+
 import Objeto.Bitacora;
 import java.io.IOException;
 import javax.swing.JOptionPane;
@@ -31,15 +31,17 @@ public class Test {
         
         
         Metodos obj=new Metodos();
-        Equipo equipo=new Equipo();
-        Gson gson = new Gson();
-    String jsonRequest;
-    String uri="https://ti.cosmic.mx/";
-    ServiceResponse sr=new ServiceResponse();
+//        Equipo equipo=new Equipo();
+//        Gson gson = new Gson();
+//    String jsonRequest;
+//    String uri="https://ti.cosmic.mx/";
+//    ServiceResponse sr=new ServiceResponse();
+
+        System.out.println("estado acutal "+obj.buscarActualizacion());
 //        
 //        //Llenando el último espacio del arreglo nulo
-        String[] datos = obj.getSysInfo();
-        datos[datos.length-1]="Espacio vacío";
+//        String[] datos = obj.getSysInfo();
+//        datos[datos.length-1]="Espacio vacío";
 //        String ram=obj.getEnRam(datos);
 //        System.out.println(ram);
 //        int ramInt=obj.ramInt(ram);
@@ -231,23 +233,23 @@ public class Test {
 //        String reporte=obj.reporteBateria();
 //        System.out.println(reporte);
 
-String[] upd=obj.getUpdates(datos);
-        for (int i = 0; i < upd.length-1; i++) {
-//            System.out.println(upd[i]);
-        }
-                    String updatesT="";
-                    ;
-                    if (upd.length>11) {
-                    int mas=upd.length-1-10;
-                    for (int i = upd.length-1-10; i <upd.length-1; i++) {
-                        System.out.println(upd[i]);
-                        upd[i]=upd[i].replace(" ", "");
-                        updatesT=updatesT.concat(upd[i]+"\n");
-                    }
-                    updatesT=updatesT.concat(" y "+mas+" mas");
-                    }
-                    
-                    System.out.println(updatesT);
+//String[] upd=obj.getUpdates(datos);
+//        for (int i = 0; i < upd.length-1; i++) {
+////            System.out.println(upd[i]);
+//        }
+//                    String updatesT="";
+//                    ;
+//                    if (upd.length>11) {
+//                    int mas=upd.length-1-10;
+//                    for (int i = upd.length-1-10; i <upd.length-1; i++) {
+//                        System.out.println(upd[i]);
+//                        upd[i]=upd[i].replace(" ", "");
+//                        updatesT=updatesT.concat(upd[i]+"\n");
+//                    }
+//                    updatesT=updatesT.concat(" y "+mas+" mas");
+//                    }
+//                    
+//                    System.out.println(updatesT);
                     
 //                    for (int i = 10; i >= 0; i--) {
 //                        System.out.println(i);

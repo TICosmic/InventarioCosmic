@@ -5,12 +5,28 @@
  */
 
 package Inventario;
+import Fuentes.ServiceResponse;
+//import Objeto.Usuario;
+import com.google.gson.Gson;
 import java.awt.AWTException;
+import java.awt.Color;
+import java.awt.Cursor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.UnknownHostException;
 import javax.swing.ImageIcon;
 
 /**
@@ -21,16 +37,19 @@ public class IniciarAdmin extends javax.swing.JFrame {
 
     Ventana ven;
     ImageIcon icon;
+    //Usuario usuario = new Usuario();
     
     
     
     public IniciarAdmin() throws AWTException {
         
         initComponents();
+        this.getContentPane().setBackground(new Color(178, 22, 33));
         setLocationRelativeTo(null);
         icon=new ImageIcon(this.getClass().getResource("/adminIco.png"));
         this.setIconImage(icon.getImage());
         this.setTitle("Salir");
+        jButton2.setVisible(false);
         
         //plano.segundoPlano();
     }
@@ -51,7 +70,7 @@ public class IniciarAdmin extends javax.swing.JFrame {
         user = new javax.swing.JTextField();
         login = new javax.swing.JButton();
         pass = new javax.swing.JPasswordField();
-        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         setResizable(false);
 
@@ -59,7 +78,7 @@ public class IniciarAdmin extends javax.swing.JFrame {
 
         jLabel2.setText("Contraseña:");
 
-        login.setText("Cerrar");
+        login.setText("Salir");
         login.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loginActionPerformed(evt);
@@ -72,10 +91,10 @@ public class IniciarAdmin extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Cancelar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jButton2.setText("Actualizar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jButton2ActionPerformed(evt);
             }
         });
 
@@ -84,21 +103,21 @@ public class IniciarAdmin extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(login))
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(user)
-                            .addComponent(pass, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE))))
-                .addContainerGap(40, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(pass)
+                            .addComponent(user)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
+                        .addComponent(login)))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -111,11 +130,11 @@ public class IniciarAdmin extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(pass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(login)
-                    .addComponent(jButton1))
-                .addContainerGap())
+                    .addComponent(jButton2))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -145,7 +164,7 @@ public class IniciarAdmin extends javax.swing.JFrame {
     private void loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginActionPerformed
         // TODO add your handling code here:
         if(user.getText().equals("Administrador")){
-            if((String.valueOf(pass.getPassword())).equals("GC267642it")){
+            if((String.valueOf(pass.getPassword())).equals("12345")){
                 System.exit(0);
             }else{
                 JOptionPane.showMessageDialog(null, "Usuario y/o contraseña incorrectos", "Error", JOptionPane.WARNING_MESSAGE);
@@ -155,13 +174,133 @@ public class IniciarAdmin extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_loginActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        setCursor(new Cursor(3));
+        //Actualizaciones
+                    
         
+
+                    
+        //Version
+        File directorio2 = new File(System.getProperty("user.home") + "\\AppData\\Local\\Programs\\Inventario COSMIC\\Temp");
+        if (!directorio2.exists()) {
+            if (directorio2.mkdirs()) {
+                System.out.println("Directorio creado");
+            } else {
+                System.out.println("Error al crear directorio");
+            } 
+        }
+                    
+                    
+        try {
+            URL ver = new URL("https://github.com/TICosmic/Actualizaciones/raw/main/Update/version.txt");
+            URLConnection urlVer = ver.openConnection();
+            
+            System.out.println(urlVer.getContentType());
+                            
+            // acceso al contenido web
+            InputStream is = urlVer.getInputStream();
+
+            //nombre del archivo destino
+            String name2 = "version.txt";
+            //Archivo destino con ruta
+            File file = new File(directorio2 +"\\"+ name2);
+
+            // Fichero en el que queremos guardar el contenido
+            FileOutputStream fos = new FileOutputStream(file);
+
+            // buffer para ir leyendo.
+            byte [] array = new byte[9999999];
+
+            // Primera lectura y bucle hasta el final
+            int leido = is.read(array);
+            while (leido > 0) {
+                fos.write(array,0,leido);
+                leido=is.read(array);
+            }
+
+            
+            
+            //Lectura del archivo
+            
+            FileReader fr = new FileReader (file);
+            BufferedReader br = new BufferedReader(fr);
+            
+            String version = br.readLine();
+            float verA=Float.valueOf(version);
+            
+            System.out.println("la versión es: "+verA);
+            
+            if (verA>2.0) {
+                //Destino descarga de actualización
+            File directorio = new File(System.getProperty("user.home") + "\\AppData\\Local\\Programs\\Inventario COSMIC");
+            if (!directorio.exists()) {
+                if (directorio.mkdirs()) {
+                    System.out.println("Directorio creado");
+                } else {
+                    System.out.println("Error al crear directorio");
+                } 
+            }
+                
+                System.out.println("Actualización disponible");
+                URL url = new URL("https://github.com/TICosmic/Actualizaciones/raw/main/Update/inventario.exe");
+                URLConnection urlCon = url.openConnection();
+                System.out.println("Descargando");
+                System.out.println("Tipo de contenido"+urlCon.getContentType());
+                
+                 // acceso al contenido web
+                InputStream in = urlCon.getInputStream();
+
+                //nombre del archivo destino
+                String name = "inventario.exe";
+                //Archivo destino con ruta
+                File inv = new File(directorio +"\\"+ name);
+
+                // Fichero en el que queremos guardar el contenido
+                FileOutputStream out = new FileOutputStream(inv);
+
+                // buffer para ir leyendo.
+                byte [] array2 = new byte[9999999];
+
+                // Primera lectura y bucle hasta el final
+                int leido2 = in.read(array2);
+                while (leido2 > 0) {
+                    out.write(array2,0,leido2);
+                    leido2=in.read(array2);
+                }
+                
+                // Cierre de conexion y fichero.
+                in.close();
+                out.close();
+
+                JOptionPane.showMessageDialog(null, "Actualización "+verA+" exitosa, cambios visibles después de reiniciar\n>> URL: " + url+"\n>> Nombre: " + name+"\n>> tamaño: " + urlCon.getContentLength() + " bytes");
+                
+                
+            }else {
+                
+                JOptionPane.showMessageDialog(null, "No hay actualizaciones disponibles, versión 2.0");
+            }
+            
+            // Cierre de conexion y fichero.
+            is.close();
+            fos.close();
+            
+            
+            
+        } catch (UnknownHostException e) {
+            System.out.println("No se pudo conectar " + e.getMessage());
+        JOptionPane.showMessageDialog(null, "Revisa tu conexión a internet", "Error", 2);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(IniciarAdmin.class.getName()).log(Level.SEVERE, (String)null, ex);
+            JOptionPane.showMessageDialog(null, "La url no es válida", "Error", 2);
+        } catch (IOException ex) {
+            Logger.getLogger(IniciarAdmin.class.getName()).log(Level.SEVERE, (String)null, ex);
+            JOptionPane.showMessageDialog(null, "La URL no es válida", "Error", 2);
+        }
         
-        this.setVisible(false);
+        setCursor(new Cursor(0));
         
-        
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -190,6 +329,8 @@ public class IniciarAdmin extends javax.swing.JFrame {
         }
         //</editor-fold>
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -204,7 +345,7 @@ public class IniciarAdmin extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;

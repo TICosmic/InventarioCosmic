@@ -29,7 +29,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib</classpathPrefix>
-                            <mainClass>Inventario.Main</mainClass>
+                            <mainClass>Inventario.SegundoPlano</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -53,7 +53,7 @@
                     </descriptorRefs>           
                     <archive>
                         <manifest>
-                            <mainClass>Inventario.Main</mainClass>
+                            <mainClass>Inventario.SegundoPlano</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -69,6 +69,5 @@
             </plugin>
     </plugins>
   </build>
-    
-    
+    <name>InventarioCosmicFuncional</name>
 </project>
