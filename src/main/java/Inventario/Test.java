@@ -38,6 +38,7 @@ public class Test {
 //    ServiceResponse sr=new ServiceResponse();
 
         System.out.println("estado acutal "+obj.buscarActualizacion());
+        System.out.println("hola mundo");
 //        
 //        //Llenando el último espacio del arreglo nulo
 //        String[] datos = obj.getSysInfo();
