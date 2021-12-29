@@ -671,11 +671,15 @@ public class Metodos {
             BufferedReader br = new BufferedReader(fr);
 
             String version = br.readLine();
-            float verA = Float.valueOf(version);
+            double verA = Double.valueOf(version);
+           
 
             System.out.println("la versión es: " + verA);
-
-            if (verA > 2.1) {
+            System.out.println(verA>2.2);
+            System.out.println(verA+2.2);
+            if (verA > 2.2) {
+                System.out.println(verA>2.2);
+                System.out.println(verA+2.2);
                 //Destino descarga de actualización
                 File directorio = new File(System.getProperty("user.home") + "\\AppData\\Local\\Programs\\Inventario COSMIC");
                 if (!directorio.exists()) {
@@ -717,7 +721,7 @@ public class Metodos {
                 in.close();
                 out.close();
 
-                mensaje = "Actualización " + verA + " exitosa\n>> Nombre: " + name + "\n>> tamaño: " + urlCon.getContentLength() + " bytes";
+                mensaje = "Actualización " +verA + " exitosa";
 
             } else {
                 mensaje = "No hay actualizaciones disponibles";

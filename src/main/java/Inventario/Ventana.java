@@ -9,7 +9,9 @@ import Objeto.Equipo;
 import Fuentes.ServiceResponse;
 import com.google.gson.Gson;
 import java.awt.AWTException;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.Point;
@@ -75,6 +77,7 @@ public final class Ventana extends javax.swing.JFrame implements Runnable {
 
         initComponents();
         setLocationRelativeTo(null);
+        this.getContentPane().setBackground(new Color(178, 22, 33));
 //        icon=new ImageIcon(this.getClass().getResource("/Fuentes/cosmic.png"));
 //        this.setIconImage(icon.getImage());
         
@@ -486,7 +489,7 @@ public final class Ventana extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_PuestoActionPerformed
 
     private void GenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GenerarActionPerformed
-        
+        setCursor(new Cursor(3));
         
         String nombre =obj.removAc(Nombre.getText().concat(" "+Apellido.getText()));
         String puesto=obj.removAc(Puesto.getText());
@@ -817,6 +820,7 @@ public final class Ventana extends javax.swing.JFrame implements Runnable {
         enviar.setEnabled(true);
         Generar.setEnabled(false);
         //abrirReport.setEnabled(true);
+        setCursor(new Cursor(0));
         
         
         
@@ -866,7 +870,7 @@ public final class Ventana extends javax.swing.JFrame implements Runnable {
     }//GEN-LAST:event_OficinaKeyReleased
 
     private void enviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enviarActionPerformed
-        
+        setCursor(new Cursor(3));
         System.out.println(equipo.getBiosVer());
         System.out.println(equipo.getNombre());
         System.out.println(equipo.getDatos());
@@ -957,6 +961,7 @@ public final class Ventana extends javax.swing.JFrame implements Runnable {
 //        } catch (MessagingException ex) {
 //            Logger.getLogger(Panel.class.getName()).log(Level.SEVERE, null, ex);
 //        }
+setCursor(new Cursor(0));
     }//GEN-LAST:event_enviarActionPerformed
 
     private void OficinaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_OficinaKeyPressed

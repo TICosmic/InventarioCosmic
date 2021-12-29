@@ -55,7 +55,7 @@ public class SegundoPlano extends javax.swing.JFrame {
      */
     private TrayIcon iconT;
     private SystemTray tray;
-    private ImageIcon icon;
+    private ImageIcon icon = new ImageIcon(this.getClass().getResource("/cosmic.png"));
 
     Gson gson = new Gson();
     String jsonRequest;
@@ -100,6 +100,7 @@ public class SegundoPlano extends javax.swing.JFrame {
     ImageIcon ok = new ImageIcon(this.getClass().getResource("/check.png"));
     ImageIcon fail = new ImageIcon(this.getClass().getResource("/fail.png"));
     //ImageIcon admin=new ImageIcon(getClass().getResource("Fuentes/admin2.png"));
+    ImageIcon verc=new ImageIcon(this.getClass().getResource("/cosmic2.png"));
     Timer tim = new Timer();
     Timer tim2 = new Timer();
 
@@ -125,15 +126,17 @@ public class SegundoPlano extends javax.swing.JFrame {
         this.getContentPane().setBackground(new Color(178, 22, 33));
         setLocationRelativeTo(null);
         //icon=new ImageIcon(getClass().getResource("Fuentes/cosmic.png"));
-        icon = new ImageIcon(this.getClass().getResource("/cosmic.png"));
+        
+        
         this.setIconImage(icon.getImage());
         terminar.setIcon(admin);
         registrar.setIcon(registro);
         actualiza.setIcon(btnUpd);
         sp.setIcon(hide);
         ejecutar.setIcon(subir);
+        acerca.setIcon(icon);
         instanciarTray();
-        this.setTitle("Inventario Cosmic 2.1");
+        this.setTitle("Inventario Cosmic 2.2");
 
         Metodos obj = new Metodos();
 
@@ -292,13 +295,10 @@ public class SegundoPlano extends javax.swing.JFrame {
                     modeloPC.setText(obj.getEnModelo(dat));
                     systemO.setText(obj.getEnSo(dat));
                     systemVer.setText(obj.getEnSoVer(dat));
-                    if (obj.getSerial().contains("0") && obj.getPcName().contains("DESKTOP-CG6CU8U")) {
-                        serial.setText("8CG43602YP");
-                        noSerie = "8CG43602YP";
-                    } else {
-                        serial.setText(obj.getSerial());
-                        noSerie = obj.getSerial();
-                    }
+                    
+                    serial.setText(obj.getSerial());
+                    noSerie = obj.getSerial();
+                    
                     reboot.setText(obj.getEnArranque(dat));
 
                     //datos de la ram
@@ -465,6 +465,7 @@ public class SegundoPlano extends javax.swing.JFrame {
         registrar = new javax.swing.JButton();
         actualiza = new javax.swing.JButton();
         upd = new javax.swing.JLabel();
+        acerca = new javax.swing.JButton();
 
         pop.setLabel("Menú");
         pop.addActionListener(new java.awt.event.ActionListener() {
@@ -556,6 +557,7 @@ public class SegundoPlano extends javax.swing.JFrame {
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel3.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
         jLabel4.setText("Espacio en disco total:");
 
@@ -680,6 +682,15 @@ public class SegundoPlano extends javax.swing.JFrame {
 
         upd.setText("actualizaciones");
 
+        acerca.setForeground(new java.awt.Color(214, 217, 223));
+        acerca.setBorder(null);
+        acerca.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        acerca.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                acercaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -687,7 +698,7 @@ public class SegundoPlano extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel7)
@@ -717,7 +728,8 @@ public class SegundoPlano extends javax.swing.JFrame {
                         .addComponent(systemVer)
                         .addGap(18, 18, 18)
                         .addComponent(serial)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(acerca)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -729,12 +741,13 @@ public class SegundoPlano extends javax.swing.JFrame {
                     .addComponent(modeloPC)
                     .addComponent(systemO)
                     .addComponent(systemVer)
-                    .addComponent(serial))
-                .addGap(18, 18, 18)
+                    .addComponent(serial)
+                    .addComponent(acerca))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -743,10 +756,10 @@ public class SegundoPlano extends javax.swing.JFrame {
                                 .addComponent(registrar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(terminar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(sp, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 18, Short.MAX_VALUE))
+                        .addGap(0, 34, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(ejecutar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(4, 4, 4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7)
                             .addComponent(reboot)
@@ -1142,125 +1155,22 @@ public class SegundoPlano extends javax.swing.JFrame {
 
         setCursor(new Cursor(3));
         //Actualizaciones
-
-        //Version
-        File directorio2 = new File(System.getProperty("user.home") + "\\AppData\\Local\\Programs\\Inventario COSMIC\\Temp");
-        if (!directorio2.exists()) {
-            if (directorio2.mkdirs()) {
-                System.out.println("Directorio creado");
-            } else {
-                System.out.println("Error al crear directorio");
-            }
-        }
-        String mensaje;
-        try {
-            URL ver = new URL("https://github.com/TICosmic/Actualizaciones/raw/main/Update/version.txt");
-            URLConnection urlVer = ver.openConnection();
-
-            System.out.println(urlVer.getContentType());
-
-            // acceso al contenido web
-            InputStream is = urlVer.getInputStream();
-
-            //nombre del archivo destino
-            String name2 = "version.txt";
-            //Archivo destino con ruta
-            File file = new File(directorio2 + "\\" + name2);
-
-            // Fichero en el que queremos guardar el contenido
-            FileOutputStream fos = new FileOutputStream(file);
-
-            // buffer para ir leyendo.
-            byte[] array = new byte[9999999];
-
-            // Primera lectura y bucle hasta el final
-            int leido = is.read(array);
-            while (leido > 0) {
-                fos.write(array, 0, leido);
-                leido = is.read(array);
-            }
-
-            //Lectura del archivo
-            FileReader fr = new FileReader(file);
-            BufferedReader br = new BufferedReader(fr);
-
-            String version = br.readLine();
-            float verA = Float.valueOf(version);
-
-            System.out.println("la versión es: " + verA);
-
-            if (verA > 2.1) {
-                //Destino descarga de actualización
-                File directorio = new File(System.getProperty("user.home") + "\\AppData\\Local\\Programs\\Inventario COSMIC");
-                if (!directorio.exists()) {
-                    if (directorio.mkdirs()) {
-                        System.out.println("Directorio creado");
-                    } else {
-                        System.out.println("Error al crear directorio");
-                    }
-                }
-
-                System.out.println("Actualización disponible");
-                URL url = new URL("https://github.com/TICosmic/Actualizaciones/raw/main/Update/inventario.exe");
-                URLConnection urlCon = url.openConnection();
-                System.out.println("Descargando");
-                System.out.println("Tipo de contenido" + urlCon.getContentType());
-
-                // acceso al contenido web
-                InputStream in = urlCon.getInputStream();
-
-                //nombre del archivo destino
-                String name = "inventario.exe";
-                //Archivo destino con ruta
-                File inv = new File(directorio + "\\" + name);
-
-                // Fichero en el que queremos guardar el contenido
-                FileOutputStream out = new FileOutputStream(inv);
-
-                // buffer para ir leyendo.
-                byte[] array2 = new byte[9999999];
-
-                // Primera lectura y bucle hasta el final
-                int leido2 = in.read(array2);
-                while (leido2 > 0) {
-                    out.write(array2, 0, leido2);
-                    leido2 = in.read(array2);
-                }
-
-                // Cierre de conexion y fichero.
-                in.close();
-                out.close();
-
-                JOptionPane.showMessageDialog(null, "Actualización " + verA + " exitosa, cambios visibles después de reiniciar\n>> Nombre: " + name + "\n>> tamaño: " + urlCon.getContentLength() + " bytes");
-                mensaje="Actualización " + verA + " exitosa";
-            } else {
-
-                JOptionPane.showMessageDialog(null, "No hay actualizaciones disponibles");
-                mensaje="No hay actualizaciones disponibles";
-            }
-
-            // Cierre de conexion y fichero.
-            is.close();
-            fos.close();
-
-        } catch (UnknownHostException e) {
-            System.out.println("No se pudo conectar " + e.getMessage());
-            JOptionPane.showMessageDialog(null, "Revisa tu conexión a internet", "Error", 2);
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(IniciarAdmin.class.getName()).log(Level.SEVERE, (String) null, ex);
-            JOptionPane.showMessageDialog(null, "Revisa tu conexión a internet", "Error", 2);
-        } catch (IOException ex) {
-            Logger.getLogger(IniciarAdmin.class.getName()).log(Level.SEVERE, (String) null, ex);
-            JOptionPane.showMessageDialog(null, "Revisa tu conexión a internet", "Error", 2);
-        }
         Metodos obj=new Metodos();
-        String mensajeUpd = obj.buscarActualizacion();
-        if (mensajeUpd.contains("Error")) {
+        String mensaje = obj.buscarActualizacion();
+        if (mensaje.contains("Error")) {
+            JOptionPane.showMessageDialog(null, mensaje, "Error", 2);
             upd.setIcon(fail);
+            
         } else {
+            JOptionPane.showMessageDialog(null, mensaje);
             upd.setIcon(ok);
         }
-        upd.setText(mensajeUpd);
+        upd.setText(mensaje);
+
+        
+        
+
+        
 
         setCursor(new Cursor(0));
 
@@ -1281,6 +1191,12 @@ public class SegundoPlano extends javax.swing.JFrame {
     private void spMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_spMouseEntered
         sp.setToolTipText("Minimizar");
     }//GEN-LAST:event_spMouseEntered
+
+    private void acercaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acercaActionPerformed
+        
+        JOptionPane.showMessageDialog(null, "Inventario Cosmic 2.2\n© 2021 TI Grupo Cosmic. Todos los derechos Reservados", "Acerca de", 2, verc);
+        
+    }//GEN-LAST:event_acercaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1326,6 +1242,7 @@ public class SegundoPlano extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.awt.MenuItem abrir;
+    private javax.swing.JButton acerca;
     private javax.swing.JButton actualiza;
     private javax.swing.JLabel discoD;
     private javax.swing.JLabel discoT;
