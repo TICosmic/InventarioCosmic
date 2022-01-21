@@ -33,15 +33,18 @@ import com.google.gson.Gson;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
+import java.time.LocalDateTime;
 import java.util.Locale;
 
 /**
@@ -49,6 +52,8 @@ import java.util.Locale;
  * @author Rubén
  */
 public class SegundoPlano extends javax.swing.JFrame {
+
+    File directorioLog = new File(System.getProperty("user.home") + "\\LogsInventario");
 
     /**
      * Creates new form Vista
@@ -100,19 +105,22 @@ public class SegundoPlano extends javax.swing.JFrame {
     ImageIcon ok = new ImageIcon(this.getClass().getResource("/check.png"));
     ImageIcon fail = new ImageIcon(this.getClass().getResource("/fail.png"));
     //ImageIcon admin=new ImageIcon(getClass().getResource("Fuentes/admin2.png"));
-    ImageIcon verc=new ImageIcon(this.getClass().getResource("/cosmic2.png"));
+    ImageIcon verc = new ImageIcon(this.getClass().getResource("/cosmic2.png"));
     Timer tim = new Timer();
     Timer tim2 = new Timer();
 
     public void segundoPlano() {//Constructor
+
         try {
             if (SystemTray.isSupported()) {
                 tray.add(iconT);
                 this.setVisible(false);
+                System.out.println("Tray Icon");
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
+
     }
 
     private void instanciarTray() {
@@ -120,301 +128,437 @@ public class SegundoPlano extends javax.swing.JFrame {
         tray = SystemTray.getSystemTray();
     }
 
-    public SegundoPlano() throws AWTException {//Constructor
-        initComponents();
-
-        this.getContentPane().setBackground(new Color(178, 22, 33));
-        setLocationRelativeTo(null);
-        //icon=new ImageIcon(getClass().getResource("Fuentes/cosmic.png"));
-        
-        
-        this.setIconImage(icon.getImage());
-        terminar.setIcon(admin);
-        registrar.setIcon(registro);
-        actualiza.setIcon(btnUpd);
-        sp.setIcon(hide);
-        ejecutar.setIcon(subir);
-        acerca.setIcon(icon);
-        instanciarTray();
-        this.setTitle("Inventario Cosmic 2.2");
+    public SegundoPlano() throws AWTException, IOException {//Constructor
+        //Creando el directorio del log
+        if (!directorioLog.exists()) {
+            if (directorioLog.mkdirs()) {
+                System.out.println("Directorio creado");
+            } else {
+                System.out.println("Error al crear directorio");
+            }
+        }
 
         Metodos obj = new Metodos();
 
-        //Habilitar inicio automático
         try {
-            System.out.println(obj.habilitarInicio());
-        } catch (Exception e) {
-            System.out.println("Error al habilitar inicio automático");
+
+            initComponents();
+
+            this.getContentPane().setBackground(new Color(178, 22, 33));
+            setLocationRelativeTo(null);
+            //icon=new ImageIcon(getClass().getResource("Fuentes/cosmic.png"));
+
+            this.setIconImage(icon.getImage());
+            terminar.setIcon(admin);
+            registrar.setIcon(registro);
+            actualiza.setIcon(btnUpd);
+            sp.setIcon(hide);
+            ejecutar.setIcon(subir);
+            acerca.setIcon(icon);
+            instanciarTray();
+            this.setTitle("Inventario Cosmic 2.2");
+
+            //Habilitar inicio automático
+            try {
+                System.out.println(obj.habilitarInicio());
+            } catch (Exception e) {
+                System.out.println("Error al habilitar inicio automático");
+            }
+
+            //Creando Log
+            System.out.println("Creando Log");
+            LocalDateTime lc = LocalDateTime.now();
+            int dia = lc.getDayOfMonth();
+            int mes = lc.getMonthValue();
+            int year = lc.getYear();
+            String ahora = "" + dia + "-" + mes + "-" + year;
+
+            String contenido = "\nArranque clase Principal:\n" + lc + " Constructor iniciado correctamente\n";
+            String ruta = System.getProperty("user.home") + "\\LogsInventario\\" + ahora + "_logActivity.txt";
+            File file = new File(ruta);
+            System.out.println(ruta);
+            BufferedWriter bw = null;
+            FileWriter fw = null;
+
+            if (!file.exists()) {
+                file.createNewFile();
+                System.out.println("Archivo creado");
+            }
+
+            fw = new FileWriter(file.getAbsoluteFile(), true);
+            bw = new BufferedWriter(fw);
+            bw.append(contenido);
+            bw.close();
+            fw.close();
+            System.out.println("información agregada!");
+
+        } catch (Exception m) {
+            LocalDateTime lc = LocalDateTime.now();
+            int dia = lc.getDayOfMonth();
+            int mes = lc.getMonthValue();
+            int year = lc.getYear();
+            String ahora = "" + dia + "-" + mes + "-" + year;
+
+            String ruta = System.getProperty("user.home") + "\\LogsInventario\\" + ahora + "_logActivity.txt";
+            String contenido = "\nArranque clase Principal:\n" + lc + "Error al iniciar constructor - " + m.getMessage() + "\n";
+            File file = new File(ruta);
+            BufferedWriter bw = null;
+            FileWriter fw = null;
+
+            if (!file.exists()) {
+                file.createNewFile();
+                System.out.println("Archivo creado");
+            }
+
+            fw = new FileWriter(file.getAbsoluteFile(), true);
+            bw = new BufferedWriter(fw);
+            bw.append(contenido);
+            bw.close();
+            fw.close();
+            System.out.println("información agregada!");
         }
 
         //Iniciar timer
         tim.schedule(new TimerTask() {
             @Override
             public void run() {
-                String[] dat = obj.getSysInfo();
-                dat[dat.length - 1] = "Espacio vacío";
+                try {
 
-                String mensaje = obj.buscarActualizacion();
-                if (mensaje.contains("Error")) {
-                    upd.setIcon(fail);
-                } else {
-                    upd.setIcon(ok);
-                }
-                upd.setText(mensaje);
+                    String[] dat = obj.getSysInfo();
+                    dat[dat.length - 1] = "Espacio vacío";
 
-                if (idioma.contains("es")) {
-
-                    //Datos del equipo
-                    marca.setText(obj.getVendor(dat));
-                    modeloPC.setText(obj.getModelo(dat));
-                    systemO.setText(obj.getSo(dat));
-                    systemVer.setText(obj.getSoVer(dat));
-                    if (obj.getSerial().contains("0") && obj.getPcName().contains("DESKTOP-CG6CU8U")) {
-                        serial.setText("8CG43602YP");
-                        noSerie = "8CG43602YP";
+                    String mensaje = obj.buscarActualizacion();
+                    if (mensaje.contains("Error")) {
+                        upd.setIcon(fail);
                     } else {
+                        upd.setIcon(ok);
+                    }
+                    upd.setText(mensaje);
+
+                    if (idioma.contains("es")) {
+
+                        //Datos del equipo
+                        marca.setText(obj.getVendor(dat));
+                        modeloPC.setText(obj.getModelo(dat));
+                        systemO.setText(obj.getSo(dat));
+                        systemVer.setText(obj.getSoVer(dat));
+                        if (obj.getSerial().contains("0") && obj.getPcName().contains("DESKTOP-CG6CU8U")) {
+                            serial.setText("8CG43602YP");
+                            noSerie = "8CG43602YP";
+                        } else {
+                            serial.setText(obj.getSerial());
+                            noSerie = obj.getSerial();
+                        }
+                        reboot.setText(obj.getArranque(dat));
+
+                        //datos de la ram
+                        int ramT = obj.ramInt(obj.getRam(dat));
+                        int ramDispo = obj.ramInt(obj.getRamDisp(dat));
+                        int ramUs = ramT - ramDispo;
+                        int porcentaje = (int) (((ramUs) * 100) / ramT);
+                        ramTot.setText("" + ramT + " MB");
+                        ramEnUso.setText("" + ramUs + " MB");
+                        porcent.setText("" + porcentaje + "%");
+                        ramDisponible.setText("" + ramDispo + " MB");
+
+                        //datos del disco
+                        String diskS = obj.getDiskSize().substring(0, obj.getDiskSize().length() - 2);
+                        double disk = Double.parseDouble(diskS);
+                        double diskSize = disk / 1024 / 1024 / 1024;
+
+                        String freeDisk = obj.getFreeSize().substring(0, obj.getFreeSize().length() - 2);
+                        double free = Double.parseDouble(freeDisk);
+                        double diskFree = free / 1024 / 1024 / 1024;
+                        double usageDisk = diskSize - diskFree;
+                        int porcentageUso = (int) ((usageDisk * 100) / diskSize);
+
+                        double tama = Math.round(diskSize);
+                        double libre = Math.round(diskFree);
+                        double uso = Math.round(usageDisk);
+
+                        discoT.setText("" + tama + " GB");
+                        discoU.setText("" + uso + " GB");
+                        porcentD.setText("" + porcentageUso + "%");
+                        discoD.setText("" + libre + " GB");
+
+                        //Datos OK
+                        String[] upd = obj.getUpdates(dat);
+                        String updatesT = "";
+
+                        if (upd.length > 15) {
+                            int mas = upd.length - 1 - 15;
+                            for (int i = upd.length - 1 - 15; i < upd.length - 1; i++) {
+                                upd[i] = upd[i].replace(" ", "");
+                                updatesT = updatesT.concat(upd[i] + "\n");
+                            }
+                            updatesT = updatesT.concat(" y " + mas + " mas");
+                        } else {
+                            for (int i = 0; i < upd.length - 1; i++) {
+                                upd[i] = upd[i].replace(" ", "");
+                                updatesT = updatesT.concat(upd[i] + "\n");
+                            }
+                        }
+
+                        fabricante = obj.removAc(obj.getVendor(dat));
+                        modelo = obj.removAc(obj.getModelo(dat));
+                        so = obj.removAc(obj.getSo(dat));
+                        soVer = obj.removAc(obj.getSoVer(dat));
+                        biosVer = obj.removAc(obj.getBiosVer(dat));
+                        cpuName = obj.removAc(obj.getCpuName());
+                        hostName = obj.removAc(obj.getPcName());
+                        tamanoDisco = tama;
+                        usoDisco = uso;
+                        libreDisco = libre;
+                        porcentageDisco = porcentageUso;
+                        ramTotal = ramT;
+                        ramDisp = ramDispo;
+                        ramUso = ramUs;
+                        porcentageRam = porcentaje;
+                        fechaArranque = obj.fecha(obj.getArranque(dat));
+                        generalInfo = "OK";
+                        updates = obj.removAc(updatesT);
+
+                        bit.setNoSerie(noSerie);
+                        //bit.setDatos("");
+                        bit.setFabricante(fabricante);
+                        bit.setModelo(modelo);
+                        bit.setSo(so);
+                        bit.setSoVer(soVer);
+                        bit.setBiosVer(biosVer);
+                        bit.setCpuName(cpuName);
+                        bit.setHostName(hostName);
+                        bit.setTamanoDisco(tama);
+                        bit.setUsoDisco(uso);
+                        bit.setLibreDisco(libre);
+                        bit.setPorcentageDisco(porcentageDisco);
+                        bit.setRamTotal(ramTotal);
+                        bit.setRamDisp(ramDisp);
+                        bit.setRamUso(ramUso);
+                        bit.setPorcentageRam(porcentageRam);
+                        bit.setFechaArranque(fechaArranque);
+                        bit.setGeneralInfo(generalInfo);
+                        bit.setUpdates(updates);
+
+                        String fechaI = obj.getInstalacion(dat);
+                        fechaI = obj.fecha(fechaI);
+                        String directorio = obj.getDirectorio(dat);
+
+                        String info = "Idioma: " + idioma + " Serial: "
+                                + noSerie + " Fecha de instalación original: "
+                                + fechaI + " Directorio de Windows: "
+                                + directorio + " Actualizaciones: "
+                                + updates;
+
+                        info = obj.removAc(info);
+                        //info=info.replace(" ", "");
+
+                        info = "ok".concat(info);
+
+                        bit.setDatos(info);
+
+                        jsonRequest = gson.toJson(bit);
+                        String respuestaService = sr.postObject("https://ti.cosmic.mx/api/BitacoraProceso", jsonRequest);
+                        System.out.println(respuestaService);
+
+                        //Hasta aquí datos ok
+                    } else {
+
+                        //Datos del equipo
+                        marca.setText(obj.getEnVendor(dat));
+                        modeloPC.setText(obj.getEnModelo(dat));
+                        systemO.setText(obj.getEnSo(dat));
+                        systemVer.setText(obj.getEnSoVer(dat));
+
                         serial.setText(obj.getSerial());
                         noSerie = obj.getSerial();
-                    }
-                    reboot.setText(obj.getArranque(dat));
 
-                    //datos de la ram
-                    int ramT = obj.ramInt(obj.getRam(dat));
-                    int ramDispo = obj.ramInt(obj.getRamDisp(dat));
-                    int ramUs = ramT - ramDispo;
-                    int porcentaje = (int) (((ramUs) * 100) / ramT);
-                    ramTot.setText("" + ramT + " MB");
-                    ramEnUso.setText("" + ramUs + " MB");
-                    porcent.setText("" + porcentaje + "%");
-                    ramDisponible.setText("" + ramDispo + " MB");
+                        reboot.setText(obj.getEnArranque(dat));
 
-                    //datos del disco
-                    String diskS = obj.getDiskSize().substring(0, obj.getDiskSize().length() - 2);
-                    double disk = Double.parseDouble(diskS);
-                    double diskSize = disk / 1024 / 1024 / 1024;
+                        //datos de la ram
+                        int ramT = obj.ramInt(obj.getEnRam(dat));
+                        ramTot.setText("" + ramT + " MB");
+                        int ramDispo = obj.ramInt(obj.getEnRamDisp(dat));
+                        int ramUs = ramT - ramDispo;
+                        int porcentaje = (int) (((ramUs) * 100) / ramT);
+                        ramEnUso.setText("" + ramUs + " MB");
+                        porcent.setText("" + porcentaje + "%");
+                        ramDisponible.setText("" + ramDispo + " MB");
 
-                    String freeDisk = obj.getFreeSize().substring(0, obj.getFreeSize().length() - 2);
-                    double free = Double.parseDouble(freeDisk);
-                    double diskFree = free / 1024 / 1024 / 1024;
-                    double usageDisk = diskSize - diskFree;
-                    int porcentageUso = (int) ((usageDisk * 100) / diskSize);
+                        //datos del disco
+                        String diskS = obj.getDiskSize().substring(0, obj.getDiskSize().length() - 2);
+                        double disk = Double.parseDouble(diskS);
+                        double diskSize = disk / 1024 / 1024 / 1024;
+                        discoT.setText("" + diskSize + " GB");
+                        String freeDisk = obj.getFreeSize().substring(0, obj.getFreeSize().length() - 2);
+                        double free = Double.parseDouble(freeDisk);
+                        double diskFree = free / 1024 / 1024 / 1024;
+                        double usageDisk = diskSize - diskFree;
+                        int porcentageUso = (int) ((usageDisk * 100) / diskSize);
+                        discoU.setText("" + usageDisk + " GB");
+                        porcentD.setText("" + porcentageUso + "%");
+                        discoD.setText("" + diskFree + " GB");
 
-                    double tama = Math.round(diskSize);
-                    double libre = Math.round(diskFree);
-                    double uso = Math.round(usageDisk);
+                        double tama = Math.round(diskSize);
+                        double libre = Math.round(diskFree);
+                        double uso = Math.round(usageDisk);
 
-                    discoT.setText("" + tama + " GB");
-                    discoU.setText("" + uso + " GB");
-                    porcentD.setText("" + porcentageUso + "%");
-                    discoD.setText("" + libre + " GB");
-
-                    //Datos OK
-                    String[] upd = obj.getUpdates(dat);
-                    String updatesT = "";
-
-                    if (upd.length > 15) {
-                        int mas = upd.length - 1 - 15;
-                        for (int i = upd.length - 1 - 15; i < upd.length - 1; i++) {
-                            upd[i] = upd[i].replace(" ", "");
-                            updatesT = updatesT.concat(upd[i] + "\n");
+                        String datosS = " ";
+                        for (int i = 0; i < dat.length - 1; i++) {
+                            //System.out.println(datos[i]);
+                            datosS = datosS.concat(dat[i] + "\n");
                         }
-                        updatesT = updatesT.concat(" y " + mas + " mas");
-                    } else {
-                        for (int i = 0; i < upd.length - 1; i++) {
-                            upd[i] = upd[i].replace(" ", "");
-                            updatesT = updatesT.concat(upd[i] + "\n");
+                        datosS = obj.removAc(datosS);
+
+                        datos = datosS;
+                        fabricante = obj.removAc(obj.getEnVendor(dat));
+                        modelo = obj.removAc(obj.getEnModelo(dat));
+                        so = obj.removAc(obj.getEnSo(dat));
+                        soVer = obj.removAc(obj.getEnSoVer(dat));
+                        biosVer = obj.removAc(obj.getEnBiosVer(dat));
+                        cpuName = obj.removAc(obj.getCpuName());
+                        hostName = obj.removAc(obj.getPcName());
+                        tamanoDisco = tama;
+                        usoDisco = uso;
+                        libreDisco = libre;
+                        porcentageDisco = porcentageUso;
+                        ramTotal = ramT;
+                        ramDisp = ramDispo;
+                        ramUso = ramUs;
+                        porcentageRam = porcentaje;
+                        fechaArranque = obj.fecha(obj.getEnArranque(dat));
+                        generalInfo = "";
+                        String[] upd = obj.getUpdates(dat);
+                        String updatesT = "";
+
+                        if (upd.length > 15) {
+                            int mas = upd.length - 1 - 15;
+                            for (int i = upd.length - 1 - 15; i < upd.length - 1; i++) {
+                                upd[i] = upd[i].replace(" ", "");
+                                updatesT = updatesT.concat(upd[i] + "\n");
+                            }
+                            updatesT = updatesT.concat(" y " + mas + " mas");
+                        } else {
+                            for (int i = 0; i < upd.length - 1; i++) {
+                                upd[i] = upd[i].replace(" ", "");
+                                updatesT = updatesT.concat(upd[i] + "\n");
+                            }
                         }
-                    }
 
-                    fabricante = obj.removAc(obj.getVendor(dat));
-                    modelo = obj.removAc(obj.getModelo(dat));
-                    so = obj.removAc(obj.getSo(dat));
-                    soVer = obj.removAc(obj.getSoVer(dat));
-                    biosVer = obj.removAc(obj.getBiosVer(dat));
-                    cpuName = obj.removAc(obj.getCpuName());
-                    hostName = obj.removAc(obj.getPcName());
-                    tamanoDisco = tama;
-                    usoDisco = uso;
-                    libreDisco = libre;
-                    porcentageDisco = porcentageUso;
-                    ramTotal = ramT;
-                    ramDisp = ramDispo;
-                    ramUso = ramUs;
-                    porcentageRam = porcentaje;
-                    fechaArranque = obj.fecha(obj.getArranque(dat));
-                    generalInfo = "OK";
-                    updates = obj.removAc(updatesT);
+                        updates = updatesT;
 
-                    bit.setNoSerie(noSerie);
-                    //bit.setDatos("");
-                    bit.setFabricante(fabricante);
-                    bit.setModelo(modelo);
-                    bit.setSo(so);
-                    bit.setSoVer(soVer);
-                    bit.setBiosVer(biosVer);
-                    bit.setCpuName(cpuName);
-                    bit.setHostName(hostName);
-                    bit.setTamanoDisco(tama);
-                    bit.setUsoDisco(uso);
-                    bit.setLibreDisco(libre);
-                    bit.setPorcentageDisco(porcentageDisco);
-                    bit.setRamTotal(ramTotal);
-                    bit.setRamDisp(ramDisp);
-                    bit.setRamUso(ramUso);
-                    bit.setPorcentageRam(porcentageRam);
-                    bit.setFechaArranque(fechaArranque);
-                    bit.setGeneralInfo(generalInfo);
-                    bit.setUpdates(updates);
+                        bit.setNoSerie(noSerie);
+                        //bit.setDatos("");
+                        bit.setFabricante(fabricante);
+                        bit.setModelo(modelo);
+                        bit.setSo(so);
+                        bit.setSoVer(soVer);
+                        bit.setBiosVer(biosVer);
+                        bit.setCpuName(cpuName);
+                        bit.setHostName(hostName);
+                        bit.setTamanoDisco(tamanoDisco);
+                        bit.setUsoDisco(usoDisco);
+                        bit.setLibreDisco(libreDisco);
+                        bit.setPorcentageDisco(porcentageDisco);
+                        bit.setRamTotal(ramTotal);
+                        bit.setRamDisp(ramDisp);
+                        bit.setRamUso(ramUso);
+                        bit.setPorcentageRam(porcentageRam);
+                        bit.setFechaArranque(fechaArranque);
+                        bit.setGeneralInfo(generalInfo);
+                        bit.setUpdates(updates);
 
-                    String fechaI = obj.getInstalacion(dat);
-                    fechaI = obj.fecha(fechaI);
-                    String directorio = obj.getDirectorio(dat);
+                        String fechaI = obj.getEnInstalacion(dat);
+                        fechaI = obj.fecha(fechaI);
+                        String directorio = obj.getEnDirectorio(dat);
 
-                    String info = "Idioma: " + idioma + " Serial: "
-                            + noSerie + " Fecha de instalación original: "
-                            + fechaI + " Directorio de Windows: "
-                            + directorio + " Actualizaciones: "
-                            + updates;
+                        String info = "Idioma: " + idioma + " Serial: "
+                                + noSerie + " Fecha de instalación original: "
+                                + fechaI + " Directorio de Windows: "
+                                + directorio + " Actualizaciones: "
+                                + updates;
 
-                    info = obj.removAc(info);
-                    //info=info.replace(" ", "");
+                        info = obj.removAc(info);
+                        //info=info.replace(" ", "");
 
-                    info = "ok".concat(info);
+                        info = "ok ".concat(info);
 
-                    bit.setDatos(info);
+                        bit.setDatos(info);
 
-                    jsonRequest = gson.toJson(bit);
-                    String respuestaService = sr.postObject("https://ti.cosmic.mx/api/BitacoraProceso", jsonRequest);
-                    System.out.println(respuestaService);
+                        jsonRequest = gson.toJson(bit);
+                        String respuestaService = sr.postObject("https://ti.cosmic.mx/api/BitacoraProceso", jsonRequest);
+                        System.out.println(respuestaService);
 
-                    //Hasta aquí datos ok
-                } else {
-
-                    //Datos del equipo
-                    marca.setText(obj.getEnVendor(dat));
-                    modeloPC.setText(obj.getEnModelo(dat));
-                    systemO.setText(obj.getEnSo(dat));
-                    systemVer.setText(obj.getEnSoVer(dat));
-                    
-                    serial.setText(obj.getSerial());
-                    noSerie = obj.getSerial();
-                    
-                    reboot.setText(obj.getEnArranque(dat));
-
-                    //datos de la ram
-                    int ramT = obj.ramInt(obj.getEnRam(dat));
-                    ramTot.setText("" + ramT + " MB");
-                    int ramDispo = obj.ramInt(obj.getEnRamDisp(dat));
-                    int ramUs = ramT - ramDispo;
-                    int porcentaje = (int) (((ramUs) * 100) / ramT);
-                    ramEnUso.setText("" + ramUs + " MB");
-                    porcent.setText("" + porcentaje + "%");
-                    ramDisponible.setText("" + ramDispo + " MB");
-
-                    //datos del disco
-                    String diskS = obj.getDiskSize().substring(0, obj.getDiskSize().length() - 2);
-                    double disk = Double.parseDouble(diskS);
-                    double diskSize = disk / 1024 / 1024 / 1024;
-                    discoT.setText("" + diskSize + " GB");
-                    String freeDisk = obj.getFreeSize().substring(0, obj.getFreeSize().length() - 2);
-                    double free = Double.parseDouble(freeDisk);
-                    double diskFree = free / 1024 / 1024 / 1024;
-                    double usageDisk = diskSize - diskFree;
-                    int porcentageUso = (int) ((usageDisk * 100) / diskSize);
-                    discoU.setText("" + usageDisk + " GB");
-                    porcentD.setText("" + porcentageUso + "%");
-                    discoD.setText("" + diskFree + " GB");
-
-                    double tama = Math.round(diskSize);
-                    double libre = Math.round(diskFree);
-                    double uso = Math.round(usageDisk);
-
-                    String datosS = " ";
-                    for (int i = 0; i < dat.length - 1; i++) {
-                        //System.out.println(datos[i]);
-                        datosS = datosS.concat(dat[i] + "\n");
-                    }
-                    datosS = obj.removAc(datosS);
-
-                    datos = datosS;
-                    fabricante = obj.removAc(obj.getEnVendor(dat));
-                    modelo = obj.removAc(obj.getEnModelo(dat));
-                    so = obj.removAc(obj.getEnSo(dat));
-                    soVer = obj.removAc(obj.getEnSoVer(dat));
-                    biosVer = obj.removAc(obj.getEnBiosVer(dat));
-                    cpuName = obj.removAc(obj.getCpuName());
-                    hostName = obj.removAc(obj.getPcName());
-                    tamanoDisco = tama;
-                    usoDisco = uso;
-                    libreDisco = libre;
-                    porcentageDisco = porcentageUso;
-                    ramTotal = ramT;
-                    ramDisp = ramDispo;
-                    ramUso = ramUs;
-                    porcentageRam = porcentaje;
-                    fechaArranque = obj.fecha(obj.getEnArranque(dat));
-                    generalInfo = "";
-                    String[] upd = obj.getUpdates(dat);
-                    String updatesT = "";
-
-                    if (upd.length > 15) {
-                        int mas = upd.length - 1 - 15;
-                        for (int i = upd.length - 1 - 15; i < upd.length - 1; i++) {
-                            upd[i] = upd[i].replace(" ", "");
-                            updatesT = updatesT.concat(upd[i] + "\n");
-                        }
-                        updatesT = updatesT.concat(" y " + mas + " mas");
-                    } else {
-                        for (int i = 0; i < upd.length - 1; i++) {
-                            upd[i] = upd[i].replace(" ", "");
-                            updatesT = updatesT.concat(upd[i] + "\n");
-                        }
                     }
 
-                    updates = updatesT;
+                    //Creando Log
+                    System.out.println("Creando Log");
+                    LocalDateTime lc = LocalDateTime.now();
+                    int dia = lc.getDayOfMonth();
+                    int mes = lc.getMonthValue();
+                    int year = lc.getYear();
+                    String ahora = "" + dia + "-" + mes + "-" + year;
 
-                    bit.setNoSerie(noSerie);
-                    //bit.setDatos("");
-                    bit.setFabricante(fabricante);
-                    bit.setModelo(modelo);
-                    bit.setSo(so);
-                    bit.setSoVer(soVer);
-                    bit.setBiosVer(biosVer);
-                    bit.setCpuName(cpuName);
-                    bit.setHostName(hostName);
-                    bit.setTamanoDisco(tamanoDisco);
-                    bit.setUsoDisco(usoDisco);
-                    bit.setLibreDisco(libreDisco);
-                    bit.setPorcentageDisco(porcentageDisco);
-                    bit.setRamTotal(ramTotal);
-                    bit.setRamDisp(ramDisp);
-                    bit.setRamUso(ramUso);
-                    bit.setPorcentageRam(porcentageRam);
-                    bit.setFechaArranque(fechaArranque);
-                    bit.setGeneralInfo(generalInfo);
-                    bit.setUpdates(updates);
+                    String contenido = "\nArranque clase Principal:\n" + lc + " CatBitácora ejecutado correctamente\nDatos enviados"
+                            + bit.getFabricante() + "\n"
+                            + bit.getModelo() + "\n"
+                            + bit.getNoSerie() + "\n"
+                            + bit.getCpuName() + "\n"
+                            + bit.getBiosVer() + "\n"
+                            + bit.getHostName() + "\n"
+                            + bit.getSo() + " Ver." + bit.getSoVer() + "\n"
+                            + bit.getTamanoDisco() + "\n"
+                            + bit.getUsoDisco() + " - " + bit.getPorcentageDisco() + "%\n"
+                            + bit.getLibreDisco() + "\n"
+                            + bit.getRamTotal() + "\n"
+                            + bit.getRamUso() + " - " + bit.getPorcentageRam() + "%\n"
+                            + bit.getUpdates() + "\n"
+                            + bit.getFechaArranque() + "\n";
+                    String ruta = System.getProperty("user.home") + "\\LogsInventario\\" + ahora + "_logActivity.txt";
+                    File file = new File(ruta);
+                    System.out.println(ruta);
+                    BufferedWriter bw = null;
+                    FileWriter fw = null;
 
-                    String fechaI = obj.getEnInstalacion(dat);
-                    fechaI = obj.fecha(fechaI);
-                    String directorio = obj.getEnDirectorio(dat);
+                    if (!file.exists()) {
+                        file.createNewFile();
+                        System.out.println("Archivo creado");
+                    }
 
-                    String info = "Idioma: " + idioma + " Serial: "
-                            + noSerie + " Fecha de instalación original: "
-                            + fechaI + " Directorio de Windows: "
-                            + directorio + " Actualizaciones: "
-                            + updates;
+                    fw = new FileWriter(file.getAbsoluteFile(), true);
+                    bw = new BufferedWriter(fw);
+                    bw.append(contenido);
+                    bw.close();
+                    fw.close();
+                    System.out.println("información agregada!");
 
-                    info = obj.removAc(info);
-                    //info=info.replace(" ", "");
+                } catch (Exception e) {
+                    LocalDateTime lc = LocalDateTime.now();
+                    int dia = lc.getDayOfMonth();
+                    int mes = lc.getMonthValue();
+                    int year = lc.getYear();
+                    String ahora = "" + dia + "-" + mes + "-" + year;
 
-                    info = "ok ".concat(info);
+                    String ruta = System.getProperty("user.home") + "\\LogsInventario\\" + ahora + "_logActivity.txt";
+                    String contenido = "\nArranque clase Principal:\n" + lc + "Error al iniciar CatBitácora - " + e.getMessage() + "\n";
+                    File file = new File(ruta);
+                    BufferedWriter bw = null;
+                    FileWriter fw = null;
 
-                    bit.setDatos(info);
+                    try {
+                        if (!file.exists()) {
+                            file.createNewFile();
+                            System.out.println("Archivo creado");
+                        }
 
-                    jsonRequest = gson.toJson(bit);
-                    String respuestaService = sr.postObject("https://ti.cosmic.mx/api/BitacoraProceso", jsonRequest);
-                    System.out.println(respuestaService);
-
+                        fw = new FileWriter(file.getAbsoluteFile(), true);
+                        bw = new BufferedWriter(fw);
+                        bw.append(contenido);
+                        bw.close();
+                        fw.close();
+                        System.out.println("información agregada!");
+                    } catch (Exception m) {
+                        System.out.println(m.getMessage());
+                    }
                 }
 
             }
@@ -1155,22 +1299,17 @@ public class SegundoPlano extends javax.swing.JFrame {
 
         setCursor(new Cursor(3));
         //Actualizaciones
-        Metodos obj=new Metodos();
+        Metodos obj = new Metodos();
         String mensaje = obj.buscarActualizacion();
         if (mensaje.contains("Error")) {
             JOptionPane.showMessageDialog(null, mensaje, "Error", 2);
             upd.setIcon(fail);
-            
+
         } else {
             JOptionPane.showMessageDialog(null, mensaje);
             upd.setIcon(ok);
         }
         upd.setText(mensaje);
-
-        
-        
-
-        
 
         setCursor(new Cursor(0));
 
@@ -1193,9 +1332,9 @@ public class SegundoPlano extends javax.swing.JFrame {
     }//GEN-LAST:event_spMouseEntered
 
     private void acercaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acercaActionPerformed
-        
+
         JOptionPane.showMessageDialog(null, "Inventario Cosmic 2.2\n© 2021 TI Grupo Cosmic. Todos los derechos Reservados", "Acerca de", 2, verc);
-        
+
     }//GEN-LAST:event_acercaActionPerformed
 
     /**
@@ -1231,11 +1370,15 @@ public class SegundoPlano extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+
                 try {
                     new SegundoPlano().setVisible(true);
                 } catch (AWTException ex) {
                     Logger.getLogger(SegundoPlano.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(SegundoPlano.class.getName()).log(Level.SEVERE, null, ex);
                 }
+
             }
         });
     }

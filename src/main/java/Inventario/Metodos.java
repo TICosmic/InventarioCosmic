@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
@@ -672,14 +673,13 @@ public class Metodos {
 
             String version = br.readLine();
             double verA = Double.valueOf(version);
-           
 
             System.out.println("la versión es: " + verA);
-            System.out.println(verA>2.2);
-            System.out.println(verA+2.2);
+            System.out.println(verA > 2.2);
+            System.out.println(verA + 2.2);
             if (verA > 2.2) {
-                System.out.println(verA>2.2);
-                System.out.println(verA+2.2);
+                System.out.println(verA > 2.2);
+                System.out.println(verA + 2.2);
                 //Destino descarga de actualización
                 File directorio = new File(System.getProperty("user.home") + "\\AppData\\Local\\Programs\\Inventario COSMIC");
                 if (!directorio.exists()) {
@@ -721,7 +721,7 @@ public class Metodos {
                 in.close();
                 out.close();
 
-                mensaje = "Actualización " +verA + " exitosa";
+                mensaje = "Actualización " + verA + " exitosa";
 
             } else {
                 mensaje = "No hay actualizaciones disponibles";
@@ -760,19 +760,34 @@ public class Metodos {
 
         if (ficheroDestino.exists()) {
             System.out.println("Hola, si existo");
-            mensaje="Inicio automático ya activado";
+            mensaje = "Inicio automático ya activado";
 
         } else {
             if (ficheroCopiar.exists()) {
                 Files.copy(Paths.get(ficheroCopiar.getAbsolutePath()), Paths.get(ficheroDestino.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
-                mensaje="Inicio automático activado correctamente";
+                mensaje = "Inicio automático activado correctamente";
             } else {
                 System.out.println("El fichero " + fichero + " no existe en el directorio " + pathOrigen);
-                mensaje="No existe el acceso directo en el escritorio";
+                mensaje = "No existe el acceso directo en el escritorio";
             }
         }
-        
+
         return mensaje;
+    }
+
+    public void goToURL(String URL) throws URISyntaxException {
+        if (java.awt.Desktop.isDesktopSupported()) {
+            java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+
+            if (desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
+                try {
+                    java.net.URI uri = new java.net.URI(URL);
+                    desktop.browse(uri);
+                } catch ( IOException ex) {
+                    System.out.println(ex.getMessage());
+                }
+            }
+        }
     }
 
 }
